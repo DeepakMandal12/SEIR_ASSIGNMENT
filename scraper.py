@@ -5,6 +5,8 @@ from urllib.parse import urljoin
 
 
 def fetch_webpage(url):
+    if not url.startswith("http"):
+        url = "https://" + url
     headers = {'User-Agent': 'Mozilla/5.0'}
     return requests.get(url, headers=headers).text
 
@@ -12,12 +14,14 @@ def fetch_webpage(url):
 def make_soup(html):
     return BeautifulSoup(html, "html.parser")
 
-
 def extract_data(soup, base_url):
+    title = ""
+    if soup.title:
+        title = soup.title.string.strip()
 
-    title = soup.title.string.strip() if soup.title else ""
-
-    body = soup.body.get_text(" ", strip=True) if soup.body else ""
+    body = ""
+    if soup.body:
+        body = soup.body.get_text(" ", strip=True)
 
     links = []
     for tag in soup.find_all("a", href=True):
